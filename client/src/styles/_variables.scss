@@ -8,6 +8,13 @@ $color-primary: #0074c7;       // Bleu principal (maquette)
 $color-primary-dark: #00497c;
 
 // --- Neutres ---
+$color-primary-light: #1976D2;
+$color-primary-bg: #e0f0fa;
+$color-gray: #6b7280;
+$color-gray-light: #9ca3af;
+$color-border: #d1d5db;
+$color-border-blue: #7ab8e0;
+$color-bg-section: #e8f4fb;
 $color-dark: #384050;
 $color-bg: #f1f8fc;
 $color-bg-card: #f1f8fc;
@@ -47,7 +54,7 @@ $border-radius-full: 9999px;
 $shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
 $shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
 $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.14);
-$shadow-hover: 0 12px 40px rgba(44, 95, 46, 0.18);
+$shadow-hover: 0 12px 40px rgba(0, 116, 199, 0.18);
 
 // --- Transitions ---
 $transition-fast: 0.15s ease;
