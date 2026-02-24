@@ -1,0 +1,55 @@
+@use '../../styles/variables' as *;
+
+.footer-site {
+  background: $color-primary;
+  color: white;
+  padding: 2rem 0;
+  margin-top: auto;
+
+  &__inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 3rem;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  }
+
+  // --- Logo région ---
+  &__logo-img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+}
+
+  // --- Adresse ---
+  &__address {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.9);
+    font-style: normal;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  // --- Liens légaux ---
+  &__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    align-items: center;
+    margin-left: auto;
+
+    @media (max-width: 768px) { margin-left: 0; }
+
+    a {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: color 0.2s;
+      &:hover { color: white; text-decoration: underline; }
+    }
+  }
+}
