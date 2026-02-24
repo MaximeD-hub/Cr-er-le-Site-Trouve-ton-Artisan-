@@ -13,9 +13,8 @@ $color-bg: #f1f8fc;
 $color-bg-card: #f1f8fc;
 
 // --- Typographie ---
-@import url(../assets/fonts/Graphik\ Family/);
-$font-display: "Graphik";
-$font-body: "Graphik";
+$font-body: 'Graphik', 'Helvetica Neue', Arial, sans-serif;
+$font-display: 'Graphik', 'Helvetica Neue', Arial, sans-serif;
 
 // --- Tailles de police ---
 $font-size-xs: 0.75rem;
