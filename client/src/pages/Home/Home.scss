@@ -7,6 +7,7 @@
 .etape-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background: white;
   border: 1.5px solid $color-border-blue;
   border-radius: 12px;
@@ -37,5 +38,12 @@
     font-weight: 700;
     color: $color-dark;
     line-height: 1.35;
+  }
+
+  &__icon {
+    font-size: 2.5rem;
+    color : $color-primary;
+    flex-shrink: 0;
+    margin-left: 1rem;
   }
 }
