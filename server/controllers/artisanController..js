@@ -1,5 +1,3 @@
-// Contrôleur des Artisans
-
 const { Op } = require("sequelize");
 const Artisan = require("../models/Artisan");
 const Specialite = require("../models/Specialite");
@@ -23,8 +21,25 @@ const INCLUDE = [
 // GET /api/artisans
 const getAllArtisans = async (req, res) => {
   try {
-    const { search, categorieId, specialiteId, top } = req.query;
+    const { search, categorieId, top } = req.query;
     const where = {};
+    const includeWithFilter = [
+      {
+        model: Specialite,
+        as: "specialite",
+        attributes: ["id", "nom"],
+        // Si categorieId, on filtre sur la spécialité
+        where: categorieId ? { categorieId } : undefined,
+        required: categorieId ? true : false,
+        include: [
+          {
+            model: Categorie,
+            as: "categorie",
+            attributes: ["id", "nom"],
+          },
+        ],
+      },
+    ];
 
     if (search) {
       where[Op.or] = [
@@ -32,12 +47,12 @@ const getAllArtisans = async (req, res) => {
         { ville: { [Op.like]: `%${search}%` } },
       ];
     }
-    if (specialiteId) where.specialiteId = specialiteId;
+
     if (top === "true") where.top = true;
 
     const artisans = await Artisan.findAll({
       where,
-      include: INCLUDE,
+      include: includeWithFilter,
       order: [["top", "DESC"], ["note", "DESC"], ["nom", "ASC"]],
     });
 
@@ -68,7 +83,6 @@ const getTopArtisans = async (req, res) => {
 const getArtisanById = async (req, res) => {
   try {
     const { id } = req.params;
-
     const artisan = await Artisan.findByPk(id, { include: INCLUDE });
 
     if (!artisan) {

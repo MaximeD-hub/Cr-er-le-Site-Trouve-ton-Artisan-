@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ArtisanCard from "../../components/ArtisanCard/ArtisanCard";
-import { getArtisans } from "../../services/api";
+import { getArtisans, getCategories } from "../../services/api";
 import "./Artisans.scss";
 
 const Artisans = () => {
@@ -15,10 +15,33 @@ const Artisans = () => {
 
   useEffect(() => {
     setLoading(true);
-    getArtisans({ search, categorie })
-      .then((res) => setArtisans(res.data.data))
-      .catch(() => setError("Impossible de charger les artisans."))
-      .finally(() => setLoading(false));
+    setError(null);
+
+    const fetchArtisans = async () => {
+      try {
+        let categorieId = null;
+
+        // Si une catégorie est sélectionnée, on récupère son id
+        if (categorie) {
+          const resCat = await getCategories();
+          const found = resCat.data.data.find((c) => c.nom === categorie);
+          if (found) categorieId = found.id;
+        }
+
+        const params = {};
+        if (search) params.search = search;
+        if (categorieId) params.categorieId = categorieId;
+
+        const res = await getArtisans(params);
+        setArtisans(res.data.data);
+      } catch {
+        setError("Impossible de charger les artisans.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArtisans();
   }, [search, categorie]);
 
   const titre = categorie
