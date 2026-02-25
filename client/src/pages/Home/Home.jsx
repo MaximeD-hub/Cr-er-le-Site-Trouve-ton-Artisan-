@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import ArtisanCard from "../../components/ArtisanCard/ArtisanCard";
-import { artisans } from "../../data/artisans";
+import { getTopArtisans } from "../../services/api";
 import { MdCategory } from "react-icons/md";        // 1. Choisir la catégorie
 import { FaSearch } from "react-icons/fa";           // 2. Choisir un artisan
 import { MdEmail } from "react-icons/md";            // 3. Le contacter
@@ -15,7 +15,16 @@ const ETAPES = [
 ];
 
 const Home = () => {
-  const topArtisans = artisans.filter((a) => a.top).slice(0, 3);
+  const [topArtisans, setTopArtisans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    getTopArtisans()
+      .then((res) => setTopArtisans(res.data.data))
+      .catch(() => setError("Impossible de charger les artisans."))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <main className="home-page">
@@ -46,6 +55,10 @@ const Home = () => {
           <h2 id="top-title" className="section-title">
             Les Artisans du mois
           </h2>
+
+            {loading && <p>Chargement...</p>}
+            {error && <p className="text-danger">{error}</p>}
+
           <div className="row g-4">
             {topArtisans.map((artisan) => (
               <div key={artisan.id} className="col-12 col-md-4">
