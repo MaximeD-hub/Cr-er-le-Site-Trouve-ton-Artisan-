@@ -1,21 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import StarRating from "../../components/StarRating/StarRating";
-import { artisans } from "../../data/artisans";
+import { getArtisanById, sendContact } from "../../services/api";
 import "./ArtisanDetail.scss";
 
 const ArtisanDetail = () => {
   const { id } = useParams();
-  const artisan = artisans.find((a) => a.id === parseInt(id, 10));
 
-  if (!artisan) return <Navigate to="/artisans" replace />;
-
-  const { nom, specialite, categorie, note, ville, apropos, siteWeb } = artisan;
+  const [artisan, setArtisan] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   const [form, setForm] = useState({ nom: "", prenom: "", email: "", message: "" });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    getArtisanById(id)
+      .then((res) => setArtisan(res.data.data))
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <p className="text-center py-5">Chargement...</p>;
+  if (notFound) return <Navigate to="/artisans" replace />;
+
+  const { nom, specialite, note, ville, apropos, siteWeb } = artisan;
+  const categorie = artisan.specialite?.categorie?.nom || "";
+  const specialiteNom = artisan.specialite?.nom || specialite;
 
   const validate = () => {
     const e = {};
@@ -33,11 +47,19 @@ const ArtisanDetail = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
-    setSuccess(true);
+    setSending(true);
+    try {
+      await sendContact({ ...form, artisanId: artisan.id });
+      setSuccess(true);
+    } catch {
+      setErrors({ api: "Une erreur est survenue. Réessayez." });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -61,13 +83,13 @@ const ArtisanDetail = () => {
           <div className="col-12 col-lg-4">
             <div className="detail-card">
               <h2 className="detail-card__nom">{nom}</h2>
-              <StarRating note={note} size="lg" />
-              <p className="detail-card__specialite">{specialite}</p>
+              <StarRating note={parseFloat(note)} size="lg" />
+              <p className="detail-card__specialite">{specialiteNom}</p>
               <p className="detail-card__ville">{ville}</p>
               <div className="detail-card__photo">
                 <img
                   src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400&h=260&fit=crop"
-                  alt={`Artisan ${specialite}`}
+                  alt={`Artisan ${specialiteNom}`}
                   loading="lazy"
                 />
               </div>
@@ -98,6 +120,10 @@ const ArtisanDetail = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate>
+
+                  {errors.api && (
+                    <p className="text-danger mb-3" role="alert">{errors.api}</p>
+                  )}
 
                   <div className="row g-3 mb-3">
                     <div className="col-12 col-md-6">
@@ -153,8 +179,8 @@ const ArtisanDetail = () => {
                       aria-label="Votre message"
                       aria-required="true"
                     />
-                    <button type="submit" className="btn-contacter">
-                      <MdEmail /> Envoyer
+                    <button type="submit" className="btn-contacter" disabled={sending}>
+                      <MdEmail /> {sending ? "Envoi..." : "Envoyer"}
                     </button>
                   </div>
                   {errors.message && <span className="detail-input__error" role="alert">{errors.message}</span>}
